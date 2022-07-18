@@ -1659,6 +1659,8 @@
           // row['Inc.-Compass'] ==  1
           // )
           data.forEach(row => {
+            row['Opportunity Space (V2)'] = row['Opportunity Space (V2)'].replace(/,/g, ""); // remove comma as it create issue while toggle yearly/maturity
+
             if(row['Opportunity Space (V2)'].includes('(')){
               row['Opportunity Space (V2)'] = (row['Opportunity Space (V2)'].split(') '))[1]
             } else {
