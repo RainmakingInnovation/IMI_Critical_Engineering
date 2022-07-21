@@ -1649,7 +1649,7 @@
           .attr("x", -titleLogoWidth / 2)
           .style("display", "none");
 
-        d3.csv("dataIMI.csv").then(function(data) {
+        d3.csv("dataIMI_latest.csv").then(function(data) {
           // console.log(data)
           // let data = dat.filter(row => 
           // row['Founded'].trim() != '#N/A' 
@@ -2057,6 +2057,8 @@
     
               // need to fix.
               var fundingCategoryDomain = [
+                "Unfunded",
+                "Pre-seed",
                 "Seed",
                 "Series A",
                 "Series B",
@@ -2067,6 +2069,8 @@
               ];
     
               var fundingCategoryRange = [
+              "Unfunded",
+                "Pre-seed",
                 "Seed",
                 "Series A",
                 "Series B",
@@ -2083,7 +2087,7 @@
                 .domain(fundingCategoryDomain)
                 .range(fundingCategoryRange);
 
-              var colors = ["#a3e8ff", "#0BC2FF", "#006B8E", "#003D51"];
+              var colors = ["#D3D3D3","#e6f9ff","#a3e8ff", "#0BC2FF", "#006B8E", "#003D51"];
 
               var nodeColorScale = d3
                 .scaleOrdinal()
@@ -2570,14 +2574,14 @@
                   var h = keySize + keySpacing;
                   var offset = 0;
                   var horz = -50;
-                  var vert = i * h - offset - 90;
+                  var vert = i * h - offset - 100;
                   return "translate(" + horz + "," + vert + ")";
                 });
     
               // rectangular legend item group
               var legendRect = keySVG
                 .append("g")
-                .attr("transform", "translate(-45,-10)");
+                .attr("transform", "translate(-45,20)");
     
               // rectangular legend item
               legendRect
@@ -2674,7 +2678,7 @@
                 .append("text")
                 .attr("class", "key-title")
                 .text("Funding Key:")
-                .attr("y", -110)
+                .attr("y", -120)
                 .attr("x", -60);
     
               // compass inner maturity labels
@@ -3083,7 +3087,7 @@
 
               var radiusSize = 0.1;
 
-              const legendItemsNames = ["Seed", "Series A", "Series B", "Series C"];
+              const legendItemsNames = ["Unfunded","Pre-seed","Seed", "Series A", "Series B", "Series C"];
 
               
               // circle nodes in compass
