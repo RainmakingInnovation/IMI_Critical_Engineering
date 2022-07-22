@@ -37,7 +37,7 @@
 
         #key-container {
           grid-column: 3 / span 1;
-          grid-row: 2 / span 1;
+          grid-row: 1/3; /* 2 / span 1;*/
           overflow: hidden;
         }
 
@@ -1530,7 +1530,7 @@
           radial = "year",
           animationDuration = 2000,
           keyWidth = 160,
-          keyHeight = 260,
+          keyHeight = 440, // 260
           filter = 0,
           filterKey = "",
           clientFilter = "All Startups",
@@ -1619,7 +1619,7 @@
           .append("g")
           .attr(
             "transform",
-            "translate(" + keyWidth / 2 + "," + keyHeight / 2 + ")"
+            "translate(" + keyWidth / 2 + "," + ((keyHeight / 2)+60) + ")"   
           );
 
         var hoverSVG = d3
@@ -2170,6 +2170,18 @@
                 })
                 .entries(data);
 
+                var count_by_region = d3
+              .nest()
+              .key(function(d) {
+                return d["Region"];
+              })
+              .sortKeys(d3.ascending)
+              .entries(data);
+
+              filterRegions = count_by_region.map(function(v) {
+                return v.key
+              })
+
               var yearList = [];
               count_by_year.forEach(function(d, i) {
                 d.inner = 50 + (i * 250) / count_by_year.length;
@@ -2563,6 +2575,71 @@
     
               var labelSuperFocusAreaRadius = outerRadius + 40;
     
+
+              // Region Key filter
+              var keyRegionTitle = keySVG
+              .append("text")
+              .attr("class", "key-title")
+              .text("Region Filter:")
+              .attr("y", 50)
+              .attr("x", -60);
+
+            var keyRegion = keySVG
+              .selectAll("g.key-region")
+              .data(count_by_region.map(function(v) {
+                return v.key
+              }))
+              .enter()
+              .append("g")
+              .attr("transform", function(d, i) {
+                var h = keySize + keySpacing;
+                var offset = 0;
+                var horz = -50;
+                var vert = i * h - offset + 70;
+                return "translate(" + horz + "," + vert + ")";
+              });
+
+            keyRegion
+              .append("circle")
+              .classed("key-item-region", true)
+              .attr("r", 4.4)
+              .attr("fill", function(d) {
+                return "#82ADBD"
+              })
+              .on("mouseover", function(d) {
+                keyMouseOver(d, "region");
+              })
+              .on("mouseout", keyMouseOut)
+              .on("click", function(d) {
+                if (filterRegions.indexOf(d) < 0) {
+                  filterRegions.push(d)             
+                } else {
+                  filterRegions = removeFromList(d, filterRegions)
+                }
+                updateNodesbyRegion()
+              });
+  
+            keyRegion
+              .append("text")
+              .text(function(d) {
+                return d;
+              })
+              .classed("key-labels key-label", true)
+              .attr("dx", "1.8em")
+              .attr("dy", "0.35em")
+              .on("mouseover", function(d) {
+                keyMouseOver(d, "region");
+              })
+              .on("mouseout", keyMouseOut)
+              .on("click", function(d) {
+                if (filterRegions.indexOf(d) < 0) {
+                  filterRegions.push(d)             
+                } else {
+                  filterRegions = removeFromList(d, filterRegions)
+                }
+                updateNodesbyRegion()
+              });
+
               // Legend --------------------------------------------------------------------
               // circle legend group
               var legendCircle = keySVG
@@ -3165,6 +3242,8 @@
                   showNodeTooltip(d)
                 })
                 .on("mouseout", hideNodeTooltip)
+
+
     
               // fade/highlight nodes on legend click
               function updateNodes(type, filterKey) {
@@ -3217,6 +3296,34 @@
                 }
                 
               }
+
+              function updateNodesbyRegion() {
+              keySVG.selectAll(".key-item-region").style("opacity", function(d) {
+                if (filterRegions.indexOf(d) >= 0) {
+                  return 1
+                } else {
+                  return 0.3
+                }
+              })
+              nodes.style("display", function(d) {
+                if (filterRegions.indexOf(d["Region"]) >= 0) {
+                  return "block"
+                } else {
+                  return "none"
+                }
+                
+              });
+
+              nodes_acquired.style("display", function(d) {
+                if (filterRegions.indexOf(d["Region"]) >= 0) {
+                  return "block"
+                } else {
+                  return "none"
+                }
+                
+              });
+
+            }
 
               // wrap text on compass label
               function textWrap(text_data, percentage, limit = 19, dataIdx) {
@@ -3892,6 +3999,78 @@
                   } 
                 });
                 nodes_acquired.attr("opacity", 0.3);
+              }
+            }
+
+            // key Mouse over
+            function keyMouseOver(data, type) {
+              if (type === "acquired") {
+                nodes_acquired.attr("opacity", 1);
+                nodes.attr("opacity", 0.3);
+                nodes_activity.attr("opacity", 0.3);
+              }
+              if (type == "region") {
+                nodes.attr("opacity", function(d) {
+                  if ((d["Region"]) === data) {
+                    return 1;
+                  } else {
+                    return 0.3;
+                  }
+                });
+                nodes_acquired.attr("opacity", function(d) {
+                  if ((d["Region"]) === data) {
+                    return 1;
+                  } else {
+                    return 0.3;
+                  }
+                });       
+              }
+              /* if (type === "size") {
+                  nodes.attr("opacity", function(d) {
+                    if (nodeSizeScaleFunction(d["Total funding (US$)"]) === data) {
+                      return 1;
+                    } else {
+                      return 0.3;
+                    }
+                  });
+                  nodes_acquired.attr("opacity", 0.3);
+                } */
+              if (type === "color") {
+                nodes.attr("opacity", function(d) {
+                  if (fundingCategoryScale(d["Funding Stage"]) === data) {
+                    return 1;
+                  } else {
+                    return 0.3;
+                  }
+                });
+                nodes_acquired.attr("opacity", 0.3);
+                nodes_activity.attr("opacity", 0.3);
+              }
+  
+              if (type === "activity") {
+                nodes.attr("opacity", function(d) {
+                  if (d["Activity/Acquisition Time"] != "" && d.hide === false) {
+                    return 1;
+                  } else {
+                    return 0.3;
+                  }
+                });
+  
+                nodes_activity.attr("opacity", function(d) {
+                  if (d["Activity/Acquisition Time"] != "") {
+                    return 1;
+                  } else {
+                    return 0.3;
+                  }
+                });
+  
+                nodes_acquired.attr("opacity", function(d) {
+                  if (d["Activity/Acquisition Time"] != "" && d.hide === false) {
+                    return 1;
+                  } else {
+                    return 0.3;
+                  }
+                });
               }
             }
     
