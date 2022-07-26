@@ -2085,7 +2085,7 @@
               var fundingCategoryScale = d3
                 .scaleOrdinal()
                 .domain(fundingCategoryDomain)
-                .range(fundingCategoryRange);
+                .range(fundingCategoryRange); 
 
               var colors = ["#D3D3D3","#e6f9ff","#a3e8ff", "#0BC2FF", "#006B8E", "#003D51"];
 
@@ -2674,15 +2674,16 @@
                   legendMouseOver("Other", "other");
                 })
                 .on("mouseout", keyMouseOut)
-                // .on("click", function(d) {
-                //   if (filterKey === "other") {
-                //     filterKey = "";
-                //     updateNodes("key", filterKey);
-                //   } else {
-                //     filterKey = "other";
-                //     updateNodes("key", filterKey);
-                //   }
-                // });
+                .on("click", function(d) {
+                  if (filterKey === "other") {
+                    filterKey = "";
+                    updateNodes("key", filterKey);
+                  } else {
+                    filterKey = "other";
+                    //filterKey = d;
+                    updateNodes("key", filterKey);
+                  }
+                });
     
               // rectangular legend text
               legendRect
@@ -2695,15 +2696,16 @@
                   legendMouseOver("Other", "other");
                 })
                 .on("mouseout", keyMouseOut)
-                // .on("click", function(d) {
-                //   if (filterKey === "other") {
-                //     filterKey = "";
-                //     updateNodes("key", filterKey);
-                //   } else {
-                //     filterKey = "other";
-                //     updateNodes("key", filterKey);
-                //   }
-                // });
+                .on("click", function(d) {
+                  if (filterKey === "other") {
+                    filterKey = "";
+                    updateNodes("key", filterKey);
+                  } else {
+                    filterKey = "other";
+                    //filterKey = d;
+                    updateNodes("key", filterKey);
+                  }
+                });
     
               // circle legend item
               legendCircle
@@ -2717,15 +2719,15 @@
                   legendMouseOver(d, "color");
                 })
                 .on("mouseout", keyMouseOut)
-                // .on("click", function(d) {
-                //   if (filterKey === d) {
-                //     filterKey = "";
-                //     updateNodes("key", filterKey);
-                //   } else {
-                //     filterKey = d;
-                //     updateNodes("key", filterKey);
-                //   }
-                // });
+                .on("click", function(d) {
+                  if (filterKey === d) {
+                    filterKey = "";
+                    updateNodes("key", filterKey);
+                  } else {
+                    filterKey = d;
+                    updateNodes("key", filterKey);
+                  }
+                });
     
               // circle legend item circle
               legendCircle
@@ -2740,15 +2742,15 @@
                   legendMouseOver(d, "color");
                 })
                 .on("mouseout", keyMouseOut)
-                // .on("click", function(d) {
-                //   if (filterKey === d) {
-                //     filterKey = "";
-                //     updateNodes("key", filterKey);
-                //   } else {
-                //     filterKey = d;
-                //     updateNodes("key", filterKey);
-                //   }
-                // });
+                .on("click", function(d) {
+                  if (filterKey === d) {
+                    filterKey = "";
+                    updateNodes("key", filterKey);
+                  } else {
+                    filterKey = d;
+                    updateNodes("key", filterKey);
+                  }
+                });
 
               // legend title
               var legendTitle = keySVG
@@ -3074,7 +3076,7 @@
                 // display Europe countries
                 nodes.attr("opacity", (d) => {
                   if(d.Country == "Europe" && (
-                    stateHero == 'all' || (stateHero == 'hero' && d.Hero == '1')
+                    stateHero == 'all' || (stateHero == 'hero' && d.Hero == 'TRUE')
                   )){
                     return 1;
                   } else {
@@ -3083,7 +3085,7 @@
                 })
                 nodes_acquired.attr("opacity", (d) => {
                   if(d.Country == "Europe" && (
-                    stateHero == 'all' || (stateHero == 'hero' && d.Hero == '1')
+                    stateHero == 'all' || (stateHero == 'hero' && d.Hero == 'TRUE')
                   )){
                     return 1;
                   } else {
@@ -3095,10 +3097,10 @@
                 stateEurope = "global";
                 // display all countries
                 nodes.attr("opacity", (d) => {
-                  return (stateHero == 'all' || (stateHero == 'hero' && d.Hero == '1')) ? 1 : 0.3;
+                  return (stateHero == 'all' || (stateHero == 'hero' && d.Hero == 'TRUE')) ? 1 : 0.3;
                 });
                 nodes_acquired.attr("opacity", (d) => {
-                  return (stateHero == 'all' || (stateHero == 'hero' && d.Hero == '1')) ? 1 : 0.3;
+                  return (stateHero == 'all' || (stateHero == 'hero' && d.Hero == 'TRUE')) ? 1 : 0.3;
                 });
               }
             }
@@ -3108,7 +3110,7 @@
                 stateHero = 'hero';
                 // display hero
                 nodes.attr('opacity', (d) => {
-                  if(d.Hero == '1' && (
+                  if(d.Hero == 'TRUE' && (
                     stateEurope == 'global' || (stateEurope == 'europe' && d.Country == 'Europe')
                     )){
                       return 1;
@@ -3117,7 +3119,7 @@
                   }
                 })
                 nodes_acquired.attr('opacity', (d) => {
-                  if(d.Hero == '1' && (
+                  if(d.Hero == 'TRUE' && (
                     stateEurope == 'global' || (stateEurope == 'europe' && d.Country == 'Europe')
                     )){
                       return 1;
@@ -3164,7 +3166,7 @@
 
               var radiusSize = 0.1;
 
-              const legendItemsNames = ["Unfunded","Pre-seed","Seed", "Series A", "Series B", "Series C"];
+              const legendItemsNames = ["Unfunded","Pre-seed","Seed", "Series A", "Series B", "Series C", "Series D", "Series E"];
 
               
               // circle nodes in compass
@@ -3243,10 +3245,135 @@
                 })
                 .on("mouseout", hideNodeTooltip)
 
-
-    
+   
               // fade/highlight nodes on legend click
               function updateNodes(type, filterKey) {
+                debugger
+                  if (filterKey === "") {
+                    data.forEach(function (d) {
+                      d.opacity = 1;
+                    });
+                    nodes.attr("opacity", 1);
+                    nodes_acquired.attr("opacity", 1);
+                    legendCircle.attr("opacity", 1);
+                    legendRect.attr("opacity", 1);
+                    segmentsLabelBand.attr("opacity", function (d) {
+                      d.opacity = 1;
+                      return d.opacity;
+                    });
+                  }
+
+                  if (filterKey === "other"){//"acquired" || filterKey === "public") {
+                    nodes.attr("opacity", function (d) {
+                      if (d["Funding Stage"] !== "Acquired" && d["Funding Stage"] !== "Public") {
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+
+                    nodes_acquired.attr("opacity", function (d) {
+                      if (d["Funding Stage"] === "Acquired" || d["Funding Stage"] === "Public") {
+                        d.opacity = 1;
+                      }
+                      return d.opacity;
+                    });
+
+                    legendCircle.attr("opacity", 0.3);
+                    legendRect.attr("opacity", 1);
+                  }
+
+                  if (filterKey === "activity") {
+                    nodes.attr("opacity", function (d) {
+                      if (
+                        d["Activity/Acquisition Time"] != "" &&
+                        d["Funding Stage"] !== "Acquired"  && d["Funding Stage"] !== "Public"
+                      ) {
+                        d.opacity = 1;
+                      } else {
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+
+                    nodes_acquired.attr("opacity", function (d) {
+                      if (d["Activity/Acquisition Time"] != "") {
+                        d.opacity = 1;
+                      } else {
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+                    legendCircle.attr("opacity", 0.3);
+
+                    legendRect.attr("opacity", 0.3);
+                  }
+
+                  if (
+                    filterKey !== "other" && //"acquired" && filterKey !== "public" &&
+                    filterKey !== "" &&
+                    type === "key"
+                  ) {
+                    nodes.attr("opacity", function (v) {
+                      if (
+                        fundingCategoryScale(v["Funding Stage"]) === filterKey
+                      ) {
+                        v.opacity = 1;
+                      } else {
+                        v.opacity = 0.3;
+                      }
+                      return v.opacity;
+                    });
+
+                    nodes_acquired.attr("opacity", function (d) {
+                      if (d["Funding Stage"] === "Acquired" || d["Funding Stage"] === "Public") {
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+
+                    legendCircle.attr("opacity", function (d) {
+                      if (d === filterKey) {
+                        return 1;
+                      } else {
+                        return 0.3;
+                      }
+                    });
+
+                    legendRect.attr("opacity", 0.3);
+                  }
+                  if (type === "focus area" && filterKey !== "") {
+                    nodes.attr("opacity", function (d) {
+                      if (d["Innovation Area"].toLowerCase() !== filterKey) {
+                        d.opacity = 0.3;
+                      } else {
+                        d.opacity = 1;
+                      }
+                      return d.opacity;
+                    });
+
+                    nodes_acquired.attr("opacity", function (d) {
+                      if (d["Opportunity Space"].toLowerCase() !== filterKey) {
+                        d.opacity = 0.3;
+                      } else {
+                        d.opacity = 1;
+                      }
+                      return d.opacity;
+                    });
+
+                    //segment_data.data.value.key
+                    segmentsLabelBand.attr("opacity", function (d) {
+                      if (d.data.value.key === filterKey) {
+                        d.opacity = 1;
+                      } else {
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+                  }
+                }
+
+
+              function updateNodes1(type, filterKey) {
                 if (filterKey === "") {
                   data.forEach(function(d) {
                     d.opacity = 1;
@@ -3298,32 +3425,32 @@
               }
 
               function updateNodesbyRegion() {
-              keySVG.selectAll(".key-item-region").style("opacity", function(d) {
-                if (filterRegions.indexOf(d) >= 0) {
-                  return 1
-                } else {
-                  return 0.3
-                }
-              })
-              nodes.style("display", function(d) {
-                if (filterRegions.indexOf(d["Region"]) >= 0) {
-                  return "block"
-                } else {
-                  return "none"
-                }
-                
-              });
+                keySVG.selectAll(".key-item-region").style("opacity", function(d) {
+                  if (filterRegions.indexOf(d) >= 0) {
+                    return 1
+                  } else {
+                    return 0.3
+                  }
+                })
+                nodes.style("display", function(d) {
+                  if (filterRegions.indexOf(d["Region"]) >= 0) {
+                    return "block"
+                  } else {
+                    return "none"
+                  }
+                  
+                });
 
-              nodes_acquired.style("display", function(d) {
-                if (filterRegions.indexOf(d["Region"]) >= 0) {
-                  return "block"
-                } else {
-                  return "none"
-                }
-                
-              });
+                nodes_acquired.style("display", function(d) {
+                  if (filterRegions.indexOf(d["Region"]) >= 0) {
+                    return "block"
+                  } else {
+                    return "none"
+                  }
+                  
+                });
 
-            }
+              }
 
               // wrap text on compass label
               function textWrap(text_data, percentage, limit = 19, dataIdx) {
@@ -3962,9 +4089,9 @@
                 || 
                 (stateHero == 'all' && stateEurope == 'europe' && _d.Country == 'Europe') 
                 ||
-                (stateHero == 'hero' && _d.Hero == '1' && stateEurope == 'global') 
+                (stateHero == 'hero' && _d.Hero == 'TRUE' && stateEurope == 'global') 
                 || 
-                (stateHero == 'hero' && _d.Hero == '1' && stateEurope == 'europe' && _d.Country == 'Europe') 
+                (stateHero == 'hero' && _d.Hero == 'TRUE' && stateEurope == 'europe' && _d.Country == 'Europe') 
               ) ? 1 : 0.3;
             }
             // label compass on mouse out  ------------------------------------------------------------------------------------------------
@@ -4004,7 +4131,7 @@
 
             // key Mouse over
             function keyMouseOver(data, type) {
-              if (type === "acquired") {
+              if (type === "acquired" || type === "public") {
                 nodes_acquired.attr("opacity", 1);
                 nodes.attr("opacity", 0.3);
                 nodes_activity.attr("opacity", 0.3);
@@ -4073,15 +4200,32 @@
                 });
               }
             }
+
+            // region click
+            function removeFromList(source_item, source_list) {
+              const i = source_list.indexOf(source_item)
+              const filteredItems = source_list.slice(0, i).concat(source_list.slice(i + 1, source_list.length))
+              return filteredItems
+            }
     
             // legend item on mouse out ------------------------------------------------------------------------------------------------
             function keyMouseOut() {
-              nodes.attr("opacity", function(_d) {
+              
+              nodes.attr("opacity", function (d) {
+                    return d.opacity;
+                  });
+                  nodes_acquired.attr("opacity", function (d) {
+                    return d.opacity;
+                  });
+                  
+              /*
+                  nodes.attr("opacity", function(_d) {
                 return getNodesOpacity(_d);
               });
               nodes_acquired.attr("opacity", function(_d) {
                 return getNodesOpacity(_d);
               });
+              */
             }
 
             // display lateral right tooltip on mouse over outter compass label 
