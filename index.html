@@ -2326,7 +2326,7 @@
                   // fade/highlight section
                   labelCompassMouseOver(d);
                   // display tooltip
-                  showOppSpaceTooltip(d)
+                  showOppSpaceTooltip(d,"Opportunity Space (V2)")
 
                 })
                 .on("mouseout", function(d) {
@@ -2347,6 +2347,7 @@
                 .attr("fill", "#0091D9") // fbdb1e old color
                 .attr("stroke-width", "2px")
                 .attr("stroke", "#fff")
+                .attr("cursor","pointer")
                 .each(function(d, i) {
                   var firstArcSection = /(^.+?)L/;
                   var newArc = firstArcSection.exec(d3.select(this).attr("d"))[1];
@@ -2377,6 +2378,14 @@
                     .attr("d", d.newArc)
                     .style("fill", "none");
                 })
+                .on("mouseover",function(d){                   
+                  showOppSpaceTooltip(d,"Cluster")
+                })
+                .on("mouseout",function(d){
+                  if (hoverOn === 0) {
+                    labelCompassMouseOut(d);
+                  }
+                });
 
                 var themeLabels = chartSVG
                   .selectAll(".theme-label-text")
@@ -2478,11 +2487,11 @@
                   .attr("d", d.newArc)
                   .style("fill", "none");
                   })
-                  .on("mouseover", function(d) {
+                  .on("mouseover", function(d) {                    
                     // fade/highlight section
                     labelCompassMouseOver(d);
                     // display tooltip
-                    showOppSpaceTooltip(d)
+                    showOppSpaceTooltip(d,"Opportunity Space (V2)");
                   })
                   .on("mouseout", function(d) {
                     if (hoverOn === 0) {
@@ -3139,6 +3148,15 @@
               }
             }
 
+            function getStartupWebsiteURL(d){
+              if(d.Website && d.Website.toLowerCase().indexOf("https://")>=0){
+                  	return d.Website;
+                  }
+                  else{
+                    	return "http://"+d.Website;
+                    } 
+            }
+
               // year-maturiy button
               d3.select("#button-16").on("change", function() {
                 switchRadial();
@@ -3176,7 +3194,7 @@
               .enter()
               .append("a")
               .attr("xlink:href", function(d) {
-                return d['Website']
+                return getStartupWebsiteURL(d);                              
                 })
                 .attr("target", "_blank")
                 .append("circle")
@@ -3201,9 +3219,17 @@
                     );
                   })
                   .on("mouseover", function(d) {
+                    let rad=d3.select(this).attr("r")
+                    rad=parseFloat(rad)+1.5;
+                    d3.select(this).attr("r",rad)
                     showNodeTooltip(d)
                   })
-                  .on("mouseout", hideNodeTooltip)
+                  .on("mouseout", function(){
+                    let rad=d3.select(this).attr("r")
+                    rad=parseFloat(rad)-1.5;
+                    d3.select(this).attr("r",rad)
+                    hideNodeTooltip()
+})
 
               // rectangular nodes in compass
               var nodes_acquired = chartSVG
@@ -3212,7 +3238,7 @@
                 .enter()
                 .append("a")
                 .attr("xlink:href", function(d) {
-                  return d['Website']
+                  return getStartupWebsiteURL(d);  
                 })
                 .attr("target", "_blank")
                 .append("rect")
@@ -3248,7 +3274,7 @@
    
               // fade/highlight nodes on legend click
               function updateNodes(type, filterKey) {
-                debugger
+                
                   if (filterKey === "") {
                     data.forEach(function (d) {
                       d.opacity = 1;
@@ -4037,6 +4063,7 @@
 
             // label compass on mouse over  ------------------------------------------------------------------------------------------------
             function labelCompassMouseOver(segment_data) {
+              
               var count_by_focus_area = d3
                 .nest()
                 .key(function(d) {
@@ -4229,11 +4256,11 @@
             }
 
             // display lateral right tooltip on mouse over outter compass label 
-            function showOppSpaceTooltip(segment_data, clicked = "") {
+            function showOppSpaceTooltip(segment_data, inputColumn) {
               var count_by_focus_area = d3
                 .nest()
                 .key(function(d) {
-                  return d["Opportunity Space (V2)"];
+                  return d[inputColumn];
                 })
                 .sortKeys(function(a, b) {
                   let aVal = 0
