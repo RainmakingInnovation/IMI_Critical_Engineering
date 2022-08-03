@@ -1540,6 +1540,7 @@
           titleLogoWidth = 80,
           titleLogoHeight = 50,
           hoverOn = 0;
+          heroFilterActive="false";
           selectedFilter="none"
           hoverSegment = "",
           leftWidth = 1100,
@@ -3086,7 +3087,7 @@
 
             // toggleGlobalEurope function --------------------------------------------------------------------------------------------
             let stateEurope = "global";
-            let stateHero = "all";
+            var stateHero = "all";
 
             function toggleGlobalEurope(){
               if (stateEurope == "global"){
@@ -3123,9 +3124,10 @@
               }
             }
 
-            function toggleAllHero(){              
+            function toggleAllHero(){
               if (stateHero == 'all'){
                 stateHero = 'hero';
+                heroFilterActive="true";
                 // display hero
                 nodes.attr('opacity', function(d){
                   if(d.Hero == 'TRUE' && (
@@ -3151,12 +3153,16 @@
               } else {
                 stateHero = "all";
                 // display all
-                nodes.attr("opacity", (d) => {
+                heroFilterActive="false";
+                nodes.attr("opacity", function(d) {
                   return (stateEurope == 'global' || (stateEurope == 'europe' && d.Country == 'Europe')) ? 1 : 0.3;
                 });
-                nodes_acquired.attr("opacity", (d) => {
+                nodes_acquired.attr("opacity", function(d) {
                   return (stateEurope == 'global' || (stateEurope == 'europe' && d.Country == 'Europe')) ? 1 : 0.3;
                 });
+              }
+              if(selectedFilter !== 'none'){
+                updateNodes("key",selectedFilter);
               }
             }
 
@@ -3286,6 +3292,93 @@
    
               // fade/highlight nodes on legend click
               function updateNodes(type, filterKey) {
+
+                if(heroFilterActive == 'true'){
+                  if (filterKey === "") {
+                    data.forEach(function (d) {
+                      d.opacity = 1;
+                    });
+                    nodes.attr("opacity", (d)=>{
+                      if (d['Hero'] === 'TRUE') {
+                        d.opacity = 1;
+                      }else{
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+                    nodes_acquired.attr("opacity", (d)=>{
+                      if (d['Hero'] === 'TRUE') {
+                        d.opacity = 1;
+                      }else{
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+                    legendCircle.attr("opacity", 1);
+                    legendRect.attr("opacity", 1);
+                   
+                    segmentsLabelBand.attr("opacity", function (d) {
+                      d.opacity = 1;
+                      return d.opacity;
+                    });
+                  }
+                  if (filterKey === "other"){//"acquired" || filterKey === "public") {
+                    debugger
+                    nodes.attr("opacity", function (d) {
+                      if (d["Funding Stage"] !== "Acquired" && d["Funding Stage"] !== "Public") {
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+
+                    nodes_acquired.attr("opacity", function (d) {
+                      if ((d["Funding Stage"] === "Acquired" || d["Funding Stage"] === "Public") && (d['Hero'] === 'TRUE')) {
+                        d.opacity = 1;
+                      }else{
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+
+                    legendCircle.attr("opacity", 0.3);
+                    legendRect.attr("opacity", 1);
+                  }
+
+                  if (
+                    filterKey !== "other" && //"acquired" && filterKey !== "public" &&
+                    filterKey !== "" &&
+                    type === "key"
+                  ) {
+                    nodes.attr("opacity", function (v) {
+                      if (
+                        fundingCategoryScale(v["Funding Stage"]) === filterKey &&
+                        v['Hero'] === 'TRUE'
+                      ) {
+                        v.opacity = 1;
+                      } else {
+                        v.opacity = 0.3;
+                      }
+                      return v.opacity;
+                    });
+
+                    nodes_acquired.attr("opacity", function (d) {
+                      if (d["Funding Stage"] === "Acquired" || d["Funding Stage"] === "Public") {
+                        d.opacity = 0.3;
+                      }
+                      return d.opacity;
+                    });
+
+                    legendCircle.attr("opacity", function (d) {
+                      if (d === filterKey) {
+                        return 1;
+                      } else {
+                        return 0.3;
+                      }
+                    });
+
+                    legendRect.attr("opacity", 0.3);
+                  }
+                }else{
                   if (filterKey === "") {
                     data.forEach(function (d) {
                       d.opacity = 1;
@@ -3299,7 +3392,6 @@
                       return d.opacity;
                     });
                   }
-
                   if (filterKey === "other"){//"acquired" || filterKey === "public") {
                     nodes.attr("opacity", function (d) {
                       if (d["Funding Stage"] !== "Acquired" && d["Funding Stage"] !== "Public") {
@@ -3408,6 +3500,7 @@
                     });
                   }
                 }
+              }
 
 
               function updateNodes1(type, filterKey) {
@@ -4154,26 +4247,57 @@
                 return getNodesOpacity(_d);
               });
             }
+            if(heroFilterActive=="true"){
+                  stateHero="all";
+                  toggleAllHero();
+                }
             }
     
             // legend item on mouse over  ------------------------------------------------------------------------------------------------
             function legendMouseOver(data, type) {
-              if (type === "other") {
-                // nodes_acquired.attr("opacity", 1);
-                nodes.attr("opacity", 0.3);
-              }
-              if (type === "color") {
-                nodes.attr("opacity", function(d) {
+                  if (heroFilterActive === "true") {
+                    if (type === "other") {
+                      // nodes_acquired.attr("opacity", 1);
+                      nodes.attr("opacity", 0.3);
+                      nodes_acquired.attr("opacity", function (d) {
+                        if (d['Hero'] === 'TRUE' && d['Funding Stage']==="Acquired") {
+                          return 1;
+                        }else{
+                          return 0.3;
+                        }
+                      })
+                    }
 
-                  if(fundingCategoryScale(d["Funding Stage"]) === data){
-                    return 1;
+                    if (type === "color") {
+                      nodes.attr("opacity", function (d) {
+
+                        if (fundingCategoryScale(d["Funding Stage"]) === data && d['Hero'] === 'TRUE') {
+                          return 1;
+                        } else {
+                          return 0.3;
+                        }
+                      });
+                      nodes_acquired.attr("opacity", 0.3);
+                    }
+
                   } else {
-                    return 0.3;
-                  } 
-                });
-                nodes_acquired.attr("opacity", 0.3);
-              }
-            }
+                    if (type === "other") {
+                      // nodes_acquired.attr("opacity", 1);
+                      nodes.attr("opacity", 0.3);
+                    }
+                    if (type === "color") {
+                      nodes.attr("opacity", function (d) {
+
+                        if (fundingCategoryScale(d["Funding Stage"]) === data) {
+                          return 1;
+                        } else {
+                          return 0.3;
+                        }
+                      });
+                      nodes_acquired.attr("opacity", 0.3);
+                    }
+                  }
+                }
 
             // key Mouse over
             function keyMouseOver(data, type) {
@@ -4256,14 +4380,12 @@
     
             // legend item on mouse out ------------------------------------------------------------------------------------------------
             function keyMouseOut() {
-              
               nodes.attr("opacity", function (d) {
-                    return d.opacity;
-                  });
-                  nodes_acquired.attr("opacity", function (d) {
-                    return d.opacity;
-                  });
-                  
+                return d.opacity;
+              });
+              nodes_acquired.attr("opacity", function (d) {
+                return d.opacity;
+              });
               /*
                   nodes.attr("opacity", function(_d) {
                 return getNodesOpacity(_d);
@@ -5045,7 +5167,6 @@
           tmp_outerRadiusMax,
           nodeDataEntry
         ) {
-          
             var numNodes = nodeDataEntry.value
             var horizontalCuts = numNodes/2
             var verticalCuts = 2
