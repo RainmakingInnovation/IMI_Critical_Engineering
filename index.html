@@ -1540,6 +1540,7 @@
           titleLogoWidth = 80,
           titleLogoHeight = 50,
           hoverOn = 0;
+          selectedFilter="none"
           hoverSegment = "",
           leftWidth = 1100,
           leftHeight = 650,
@@ -2379,7 +2380,7 @@
                     .style("fill", "none");
                 })
                 .on("mouseover",function(d){                   
-                  showOppSpaceTooltip(d,"Cluster")
+                  showOppSpaceTooltip(d,"Cluster");
                 })
                 .on("mouseout",function(d){
                   if (hoverOn === 0) {
@@ -2685,10 +2686,12 @@
                 .on("mouseout", keyMouseOut)
                 .on("click", function(d) {
                   if (filterKey === "other") {
+                    selectedFilter="none";
                     filterKey = "";
                     updateNodes("key", filterKey);
                   } else {
                     filterKey = "other";
+                    selectedFilter="other";
                     //filterKey = d;
                     updateNodes("key", filterKey);
                   }
@@ -2707,10 +2710,12 @@
                 .on("mouseout", keyMouseOut)
                 .on("click", function(d) {
                   if (filterKey === "other") {
+                    selectedFilter="none";
                     filterKey = "";
                     updateNodes("key", filterKey);
                   } else {
                     filterKey = "other";
+                    selectedFilter="other";
                     //filterKey = d;
                     updateNodes("key", filterKey);
                   }
@@ -2731,9 +2736,11 @@
                 .on("click", function(d) {
                   if (filterKey === d) {
                     filterKey = "";
+                    selectedFilter="none";
                     updateNodes("key", filterKey);
                   } else {
                     filterKey = d;
+                    selectedFilter=d;
                     updateNodes("key", filterKey);
                   }
                 });
@@ -2754,9 +2761,11 @@
                 .on("click", function(d) {
                   if (filterKey === d) {
                     filterKey = "";
+                    selectedFilter="none";
                     updateNodes("key", filterKey);
                   } else {
                     filterKey = d;
+                    selectedFilter=d;
                     updateNodes("key", filterKey);
                   }
                 });
@@ -3027,7 +3036,7 @@
                             radiusSize,
                             nodeSecondData[i].values[j].value
                             )
-                            if (congestion > 5) {
+                            if (congestion > 4.3) {
                               d.resultsYear = assignRandom(
                                 tmp_startAngleMin,
                                 tmp_endAngleMax,
@@ -3274,7 +3283,6 @@
    
               // fade/highlight nodes on legend click
               function updateNodes(type, filterKey) {
-                
                   if (filterKey === "") {
                     data.forEach(function (d) {
                       d.opacity = 1;
@@ -4125,6 +4133,13 @@
             function labelCompassMouseOut(d) {
               
                 d3.select("#opp-space-tooltip-container").style("opacity", "0")
+                if(selectedFilter != "none"){
+                  if(selectedFilter == "other"){
+                    updateNodes("key", "other");
+                  }else{
+                    updateNodes("key", selectedFilter);
+                  }
+                }else{
               segmentsLabelBand.attr("opacity", function(_d) {
                 return _d.opacity;
               });
@@ -4135,6 +4150,7 @@
               nodes_acquired.attr("opacity", function(_d) {
                 return getNodesOpacity(_d);
               });
+            }
             }
     
             // legend item on mouse over  ------------------------------------------------------------------------------------------------
@@ -5026,6 +5042,7 @@
           tmp_outerRadiusMax,
           nodeDataEntry
         ) {
+      
             var numNodes = nodeDataEntry.value
             var horizontalCuts = numNodes/2
             var verticalCuts = 2
