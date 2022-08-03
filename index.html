@@ -3123,25 +3123,28 @@
               }
             }
 
-            function toggleAllHero(){
+            function toggleAllHero(){              
               if (stateHero == 'all'){
                 stateHero = 'hero';
                 // display hero
-                nodes.attr('opacity', (d) => {
+                nodes.attr('opacity', function(d){
                   if(d.Hero == 'TRUE' && (
                     stateEurope == 'global' || (stateEurope == 'europe' && d.Country == 'Europe')
                     )){
+                      d3.select(this.parentElement).raise();
                       return 1;
                   } else {
                     return 0.3;
                   }
                 })
-                nodes_acquired.attr('opacity', (d) => {
+                nodes_acquired.attr('opacity', function(d) {
                   if(d.Hero == 'TRUE' && (
                     stateEurope == 'global' || (stateEurope == 'europe' && d.Country == 'Europe')
                     )){
+                      d3.select(this.parentElement).raise();
                       return 1;
                     } else {
+                      
                       return 0.3;
                     }
                   })
@@ -4135,7 +4138,7 @@
                 d3.select("#opp-space-tooltip-container").style("opacity", "0")
                 if(selectedFilter != "none"){
                   if(selectedFilter == "other"){
-                    updateNodes("key", "other");
+                    updateNodes("key", selectedFilter);
                   }else{
                     updateNodes("key", selectedFilter);
                   }
@@ -5042,7 +5045,7 @@
           tmp_outerRadiusMax,
           nodeDataEntry
         ) {
-      
+          
             var numNodes = nodeDataEntry.value
             var horizontalCuts = numNodes/2
             var verticalCuts = 2
